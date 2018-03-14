@@ -1,9 +1,11 @@
 package br.feevale.telas;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -23,6 +25,7 @@ public abstract class BaseTelaSwing extends JFrame implements Runnable {
      *
      * @param titulo
      */
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public BaseTelaSwing(String titulo) {
         setTitle("FEEVALE - " + titulo);
         setLayout(null);
@@ -101,7 +104,7 @@ public abstract class BaseTelaSwing extends JFrame implements Runnable {
     protected final JCheckBox addCheckbox(int nrLinha, int nrColuna, String texto, Integer key, boolean selected) {
 
         int posColuna = getCoordenadaX(nrColuna);
-        int posLinha = getCoordenadaY(nrLinha, ALTURA_LINHA *3/5);
+        int posLinha = getCoordenadaY(nrLinha, ALTURA_LINHA * 3 / 5);
 
         JCheckBox component = new JCheckBox(texto);
         component.setBounds(posColuna, posLinha, 2 * getLarguraColuna(), 15);
@@ -115,26 +118,59 @@ public abstract class BaseTelaSwing extends JFrame implements Runnable {
         return component;
     }
 
-    /**
-     * Adiciona um campo de texto
-     *
-     * @param nrLinha
-     * @param nrColuna
-     * @param texto
-     * @param largura
-     * @return JTextField
-     */
+    protected final void addRadioButtons(JRadioButton... radios) {
+        addRadioButtons(this, radios);
+    }
+
+    protected final void addRadioButtons(JFrame parent, JRadioButton... radios) {
+        addRadioButtons(parent, new ButtonGroup(), radios);
+    }
+
+    protected final void addRadioButtons(JFrame parent, ButtonGroup group, JRadioButton... radios) {
+        for (JRadioButton r : radios) {
+            group.add(r);
+            parent.add(r);
+        }
+        if (parent != this) {
+            getContentPane().add(parent);
+        }
+    }
+
+    protected final JRadioButton createRadioButton(int nrLinha, int nrColuna, String texto) {
+        return createRadioButton(nrLinha, nrColuna, texto, false);
+    }
+
+    protected final JRadioButton createRadioButton(int nrLinha, int nrColuna, String texto, boolean selected) {
+
+        int posColuna = getCoordenadaX(nrColuna);
+        int posLinha = getCoordenadaY(nrLinha, ALTURA_LINHA * 3 / 5);
+
+        JRadioButton component = new JRadioButton(texto);
+        component.setBounds(posColuna, posLinha, 2 * getLarguraColuna(), 15);
+        component.setToolTipText(texto);
+
+        component.setSelected(selected);
+
+        return component;
+    }
+
     protected final JTextArea addTextArea(int nrLinha, int nrColuna, String texto, int largura) {
+        return addTextArea(nrLinha, nrColuna, texto, largura, 25);
+    }
+
+    protected final JTextArea addTextArea(int nrLinha, int nrColuna, String texto, int largura, int altura) {
 
         int posColuna = getCoordenadaX(nrColuna);
         int posLinha = getCoordenadaY(nrLinha);
 
         JLabel lb = new JLabel(texto);
-        lb.setBounds(posColuna, posLinha, largura * getLarguraColuna(), 20);
+        lb.setBounds(posColuna, posLinha, largura * getLarguraColuna(), altura * getAlturaLinha());
         getContentPane().add(lb);
 
+        posLinha += getAlturaLinha();
+
         JTextArea component = new JTextArea();
-        component.setBounds(posColuna, posLinha + 20, largura * getLarguraColuna(), 23);
+        component.setBounds(posColuna, posLinha + 20, largura * getLarguraColuna(), altura * getAlturaLinha());
         getContentPane().add(component);
 
         return component;
@@ -159,6 +195,10 @@ public abstract class BaseTelaSwing extends JFrame implements Runnable {
             larguraColuna /= NRO_COLUNAS;
         }
         return larguraColuna;
+    }
+
+    private int getAlturaLinha() {
+        return ALTURA_LINHA;
     }
 
 }

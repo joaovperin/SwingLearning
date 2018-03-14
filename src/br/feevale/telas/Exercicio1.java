@@ -7,7 +7,7 @@ package br.feevale.telas;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -20,9 +20,9 @@ import javax.swing.SwingUtilities;
  * https://docs.oracle.com/javase/tutorial/uiswing/components/button.html
  *
  */
-public class TelaCheckExemplo extends BaseTelaSwing implements ItemListener {
+public class Exercicio1 extends BaseTelaSwing implements ItemListener {
 
-    public TelaCheckExemplo(String titulo) {
+    public Exercicio1(String titulo) {
         super(titulo);
     }
 
@@ -37,26 +37,38 @@ public class TelaCheckExemplo extends BaseTelaSwing implements ItemListener {
         addCheckbox(i++, j, "Se", KeyEvent.VK_S).addItemListener(this);
         addCheckbox(i++, j, "Ver", KeyEvent.VK_V).addItemListener(this);
 
-        i = 1;
+        i = 3;
         j = 3;
-        addCheckbox(i++, j, "Basta", KeyEvent.VK_B).addItemListener(this);
-        addCheckbox(i++, j, "XXXX", KeyEvent.VK_X).addItemListener(this);
+        addRadioButtons(this,
+                createRadioButton(i++, j, "Sim"),
+                createRadioButton(i++, j, "Não"));
+
+        i = 3;
+        j = 5;
+        addTextArea(i, j, "Digite seus dados", 6, 2);
+
+        i = 1;
+        j = 5;
+        addField(i++, j, "Nome", 3);
+        addField(i++, j, "Sobrenome", 3);
+        i = 1;
+        j = 9;
+        addField(i++, j, "Oie", 3);
+        addField(i++, j, "Tchauo", 3);
+
+        i = 7;
+        j = 1;
+        addButton(i, j, "TOUCHÉ", 3).addActionListener((e) -> JOptionPane.showMessageDialog(null, "Atenção", "EU sou bonito :D", JOptionPane.OK_OPTION));
     }
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        //
-        Object source = e.getItemSelectable();
-
-        if (e.getStateChange() == ItemEvent.DESELECTED) {
-            System.out.println("DESELECTED " + ((JCheckBox) source).getText());
-        }
-        //        //...
-        //        updatePicture();
+        Object item = e.getItem();
+        System.out.println("CLIQUEI NA CHECKBOX " + e.getSource());
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new TelaCheckExemplo("Teste Checkbox"));
+        SwingUtilities.invokeLater(new Exercicio1("Teste RadioButton"));
     }
 
 }
