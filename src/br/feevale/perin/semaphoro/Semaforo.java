@@ -2,7 +2,7 @@
  * SwingLearning
  * CopyRight Rech Informática Ltda. Todos os direitos reservados.
  */
-package br.feevale.perin;
+package br.feevale.perin.semaphoro;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,11 +10,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -32,6 +28,20 @@ public class Semaforo extends JFrame implements Runnable {
     private Alerta red;
     private Alerta yellow;
     private Alerta green;
+
+    private String ad = null;
+
+    public Alerta getRed() {
+        return red;
+    }
+
+    public Alerta getYellow() {
+        return yellow;
+    }
+
+    public Alerta getGreen() {
+        return green;
+    }
 
     public Semaforo() {
         super("Semaforo");
@@ -53,9 +63,6 @@ public class Semaforo extends JFrame implements Runnable {
     public void run() {
         buildWindow();
         startSemaphore();
-        new Thread(() -> {
-            runBlablabla();
-        }).start();
     }
 
     private void buildWindow() {
@@ -73,11 +80,7 @@ public class Semaforo extends JFrame implements Runnable {
     }
 
     private void startSemaphore() {
-        addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent ke) {
-
-            }
+        addKeyListener(new AbstractKeyListener() {
 
             @Override
             public void keyPressed(KeyEvent k) {
@@ -96,31 +99,13 @@ public class Semaforo extends JFrame implements Runnable {
                 }
                 repaint();
             }
-
-            @Override
-            public void keyReleased(KeyEvent ke) {
-
-            }
         });
 
-        addComponentListener(new ComponentListener() {
+        addComponentListener(new AbstractComponentListener() {
             @Override
             public void componentResized(ComponentEvent ce) {
                 updateSize();
             }
-
-            @Override
-            public void componentMoved(ComponentEvent ce) {
-            }
-
-            @Override
-            public void componentShown(ComponentEvent ce) {
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent ce) {
-            }
-
         });
     }
 
@@ -138,102 +123,34 @@ public class Semaforo extends JFrame implements Runnable {
         paintAlert(g, red);
         paintAlert(g, yellow);
         paintAlert(g, green);
-    }
 
-    /**
-     * Main entry point
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Semaforo());
-    }
+        float w10 = getWidth() / 10;
+        int pX = (int) (getWidth() / 2 - w10 / 2);
 
-    private void paintAlert(Graphics g, Alerta a) {
-//        final int off = getHeight() / 15;
-        final int off = 5;
-        g.setColor(a.color());
-        g.fillRect((int) (a.x() * w), (int) (a.y() * h + off * a.y()), w, h);
-    }
-
-    private class Alerta {
-
-        private final float x;
-        private final float y;
-        private final Color c;
-
-        private int alpha = 255;
-
-        public Alerta(float x, float y, Color color) {
-            this.x = x;
-            this.y = y;
-            this.c = color;
-        }
-
-        public float x() {
-            return x;
-        }
-
-        public float y() {
-            return y;
-        }
-
-        public Color color() {
-            return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
-        }
-
-        public void dark() {
-            this.alpha = 120;
-        }
-
-        public void light() {
-            this.alpha = 255;
-        }
-
-        public void changeState() {
-            if (this.alpha == 255) {
-                dark();
-            } else {
-                light();
-            }
+        if (this.ad != null) {
+            g.drawString(this.ad, pX, 50);
         }
 
     }
 
-    public void runBlablabla() {
-
-        Alerta current = green;
-        Alerta next = yellow;
-        int time = 3;
-
-        while (true) {
-
+    public void swapAd(String ad) {
+        this.ad = ad;
+        repaint();
+        SwingUtilities.invokeLater(() -> {
             try {
-                if (current == green) {
-                    time = 5;
-                    next = yellow;
-                } else if (current == yellow) {
-                    time = 2;
-                    next = red;
-                } else if (current == red) {
-                    time = 5;
-                    next = green;
-                }
-
-                green.dark();
-                yellow.dark();
-                red.dark();
-
-                current.light();
+                Thread.sleep(2000);
+                this.ad = null;
                 repaint();
-                Thread.sleep(time * 1000);
-                current = next;
-
             } catch (InterruptedException ex) {
 
             }
-        }
+        });
+    }
 
+    private void paintAlert(Graphics g, Alerta a) {
+        final int off = 5;
+        g.setColor(a.color());
+        g.fillRect((int) (a.x() * w), (int) (a.y() * h + off * a.y()), w, h);
     }
 
 }
