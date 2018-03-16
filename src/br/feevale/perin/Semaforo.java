@@ -9,8 +9,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.math.BigInteger;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -19,7 +22,8 @@ import javax.swing.SwingUtilities;
  */
 public class Semaforo extends JFrame implements Runnable {
 
-    private static final int ALERT_SIZE = 200;
+    public static int w = 80;
+    public static int h = 80;
 
     /** Window Size */
     private final Rectangle bounds;
@@ -41,6 +45,7 @@ public class Semaforo extends JFrame implements Runnable {
         System.out.printf("** Assuming resolution of %d/%d\n", (int) width, (int) height);
 
         this.bounds = new Rectangle(wMargin, hMargin, (int) width - 2 * wMargin, (int) height - 2 * hMargin);
+        updateSize();
     }
 
     @Override
@@ -55,11 +60,12 @@ public class Semaforo extends JFrame implements Runnable {
         setBounds(bounds);
         setVisible(true);
 
-        int row = 0;
+        float row = 2.9f;
+        float col = 4.5f;
 
-        this.red = new Alerta(1, row++, Color.red);
-        this.yellow = new Alerta(1, row++, Color.yellow);
-        this.green = new Alerta(1, row++, Color.green);
+        this.red = new Alerta(col, row++, Color.red);
+        this.yellow = new Alerta(col, row++, Color.yellow);
+        this.green = new Alerta(col, row++, Color.green);
     }
 
     private void startSemaphore() {
@@ -92,6 +98,32 @@ public class Semaforo extends JFrame implements Runnable {
 
             }
         });
+
+        addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent ce) {
+                updateSize();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent ce) {
+            }
+
+            @Override
+            public void componentShown(ComponentEvent ce) {
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent ce) {
+            }
+
+        });
+    }
+
+    public final void updateSize() {
+        Dimension size = getSize();
+        w = (int) (size.getWidth() / 10);
+        h = (int) (size.getHeight() / 10);
     }
 
     @Override
@@ -114,23 +146,32 @@ public class Semaforo extends JFrame implements Runnable {
     }
 
     private void paintAlert(Graphics g, Alerta a) {
-        final int off = 55;
+//        final int off = getHeight() / 15;
+        final int off = 5;
         g.setColor(a.color());
-        g.fillRect(a.x * ALERT_SIZE, a.y * ALERT_SIZE + off, ALERT_SIZE, ALERT_SIZE);
+        g.fillRect((int) (a.x() * w), (int) (a.y() * h + off * a.y()), w, h);
     }
 
     private class Alerta {
 
-        public final int x;
-        public final int y;
+        private final float x;
+        private final float y;
         private final Color c;
 
-        public int alpha = 255;
+        private int alpha = 255;
 
-        public Alerta(int x, int y, Color color) {
+        public Alerta(float x, float y, Color color) {
             this.x = x;
             this.y = y;
             this.c = color;
+        }
+
+        public float x() {
+            return x;
+        }
+
+        public float y() {
+            return y;
         }
 
         public Color color() {
@@ -145,13 +186,6 @@ public class Semaforo extends JFrame implements Runnable {
             }
         }
 
-        public void bright() {
-            this.alpha = 255;
-        }
-
-        public void fade() {
-            this.alpha = 120;
-        }
     }
 
 }
