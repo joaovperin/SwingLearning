@@ -13,7 +13,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.math.BigInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -52,6 +53,9 @@ public class Semaforo extends JFrame implements Runnable {
     public void run() {
         buildWindow();
         startSemaphore();
+        new Thread(() -> {
+            runBlablabla();
+        }).start();
     }
 
     private void buildWindow() {
@@ -178,11 +182,55 @@ public class Semaforo extends JFrame implements Runnable {
             return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
         }
 
+        public void dark() {
+            this.alpha = 120;
+        }
+
+        public void light() {
+            this.alpha = 255;
+        }
+
         public void changeState() {
             if (this.alpha == 255) {
-                this.alpha = 120;
+                dark();
             } else {
-                this.alpha = 255;
+                light();
+            }
+        }
+
+    }
+
+    public void runBlablabla() {
+
+        Alerta current = green;
+        Alerta next = yellow;
+        int time = 3;
+
+        while (true) {
+
+            try {
+                if (current == green) {
+                    time = 5;
+                    next = yellow;
+                } else if (current == yellow) {
+                    time = 2;
+                    next = red;
+                } else if (current == red) {
+                    time = 5;
+                    next = green;
+                }
+
+                green.dark();
+                yellow.dark();
+                red.dark();
+
+                current.light();
+                repaint();
+                Thread.sleep(time * 1000);
+                current = next;
+
+            } catch (InterruptedException ex) {
+
             }
         }
 
