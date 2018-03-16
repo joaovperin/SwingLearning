@@ -9,6 +9,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -61,13 +63,42 @@ public class Semaforo extends JFrame implements Runnable {
     }
 
     private void startSemaphore() {
-        System.out.println("started");
+        addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent ke) {
 
+            }
+
+            @Override
+            public void keyPressed(KeyEvent k) {
+                switch (k.getKeyChar()) {
+                    case '1':
+                        green.changeState();
+                        break;
+                    case '2':
+                        yellow.changeState();
+                        break;
+                    case '3':
+                        red.changeState();
+                        break;
+                    default:
+                        break;
+                }
+                repaint();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent ke) {
+
+            }
+        });
     }
 
     @Override
     public void paint(Graphics g) {
-        super.paint(g);
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, getWidth(), getHeight());
+
         paintAlert(g, red);
         paintAlert(g, yellow);
         paintAlert(g, green);
@@ -84,7 +115,7 @@ public class Semaforo extends JFrame implements Runnable {
 
     private void paintAlert(Graphics g, Alerta a) {
         final int off = 55;
-        g.setColor(a.color);
+        g.setColor(a.color());
         g.fillRect(a.x * ALERT_SIZE, a.y * ALERT_SIZE + off, ALERT_SIZE, ALERT_SIZE);
     }
 
@@ -92,14 +123,35 @@ public class Semaforo extends JFrame implements Runnable {
 
         public final int x;
         public final int y;
-        public final Color color;
+        private final Color c;
+
+        public int alpha = 255;
 
         public Alerta(int x, int y, Color color) {
             this.x = x;
             this.y = y;
-            this.color = color;
+            this.c = color;
         }
 
+        public Color color() {
+            return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
+        }
+
+        public void changeState() {
+            if (this.alpha == 255) {
+                this.alpha = 120;
+            } else {
+                this.alpha = 255;
+            }
+        }
+
+        public void bright() {
+            this.alpha = 255;
+        }
+
+        public void fade() {
+            this.alpha = 120;
+        }
     }
 
 }
