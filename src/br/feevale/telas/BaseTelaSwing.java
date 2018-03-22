@@ -1,8 +1,12 @@
 package br.feevale.telas;
 
+import java.awt.event.ActionListener;
+import java.text.NumberFormat;
+import java.util.Formatter;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
@@ -10,6 +14,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public abstract class BaseTelaSwing extends JFrame implements Runnable {
+
+    protected static final String DESC_INFO = "Informação";
 
     public static final int ALTURA_LINHA = 43;
     public static final int NRO_COLUNAS = 12;
@@ -57,11 +63,18 @@ public abstract class BaseTelaSwing extends JFrame implements Runnable {
      * @return JButton
      */
     protected final JButton addButton(int nrLinha, int nrColuna, String texto, int largura) {
+        return addButton(nrLinha, nrColuna, texto, largura, null);
+    }
+
+    protected final JButton addButton(int nrLinha, int nrColuna, String texto, int largura, ActionListener al) {
 
         int posColuna = getCoordenadaX(nrColuna);
         int posLinha = getCoordenadaY(nrLinha);
 
         JButton component = new JButton(texto);
+        if (al != null) {
+            component.addActionListener(al);
+        }
         component.setBounds(posColuna, posLinha, largura * getLarguraColuna(), 38);
         getContentPane().add(component);
 
@@ -87,6 +100,22 @@ public abstract class BaseTelaSwing extends JFrame implements Runnable {
         getContentPane().add(lb);
 
         JTextField component = new JTextField();
+        component.setBounds(posColuna, posLinha + 20, largura * getLarguraColuna(), 23);
+        getContentPane().add(component);
+
+        return component;
+    }
+
+    protected final JFormattedTextField addNumberField(int nrLinha, int nrColuna, String texto, int largura) {
+
+        int posColuna = getCoordenadaX(nrColuna);
+        int posLinha = getCoordenadaY(nrLinha);
+
+        JLabel lb = new JLabel(texto);
+        lb.setBounds(posColuna, posLinha, largura * getLarguraColuna(), 20);
+        getContentPane().add(lb);
+
+        JFormattedTextField component = new JFormattedTextField(NumberFormat.getCurrencyInstance());
         component.setBounds(posColuna, posLinha + 20, largura * getLarguraColuna(), 23);
         getContentPane().add(component);
 
